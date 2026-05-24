@@ -33,6 +33,10 @@ class Game {
         // Bind keyboard
         document.addEventListener("keydown", (e) => this.handleKeydown(e));
 
+        // Bind touch / click on canvas for mobile
+        this.canvas.addEventListener("touchstart", (e) => this.handleTouch(e), { passive: false });
+        this.canvas.addEventListener("click", (e) => this.handleTouch(e));
+
         // Bind overlay button
         this.overlayBtn.addEventListener("click", () => this.start());
 
@@ -314,6 +318,12 @@ class Game {
         this.food = empty[Math.floor(Math.random() * empty.length)];
     }
 
+    changeDirection(newDir) {
+        // Prevent 180-degree reversal
+        if (this.direction.x + newDir.x === 0 && this.direction.y + newDir.y === 0) return;
+        this.nextDirection = newDir;
+    }
+
     handleKeydown(e) {
         if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
             e.preventDefault();
@@ -321,20 +331,37 @@ class Game {
 
         if (!this.isRunning) return;
 
-        const dir = this.direction;
         switch (e.key) {
-            case "ArrowUp":
-                if (dir.y !== 1) this.nextDirection = { x: 0, y: -1 };
-                break;
-            case "ArrowDown":
-                if (dir.y !== -1) this.nextDirection = { x: 0, y: 1 };
-                break;
-            case "ArrowLeft":
-                if (dir.x !== 1) this.nextDirection = { x: -1, y: 0 };
-                break;
-            case "ArrowRight":
-                if (dir.x !== -1) this.nextDirection = { x: 1, y: 0 };
-                break;
+            case "ArrowUp":    this.changeDirection({ x: 0, y: -1 }); break;
+            case "ArrowDown":  this.changeDirection({ x: 0, y: 1 }); break;
+            case "ArrowLeft":  this.changeDirection({ x: -1, y: 0 }); break;
+            case "ArrowRight": this.changeDirection({ x: 1, y: 0 }); break;
+        }
+    }
+
+    handleTouch(e) {
+        if (!this.isRunning) return;
+        e.preventDefault();
+
+        const rect = this.canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        // Convert to canvas-local coordinates, accounting for CSS scaling
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const cx = (clientX - rect.left) * scaleX;
+        const cy = (clientY - rect.top) * scaleY;
+
+        // Relative to canvas center
+        const dx = cx - this.canvas.width / 2;
+        const dy = cy - this.canvas.height / 2;
+
+        // Dominant axis decides the direction
+        if (Math.abs(dx) > Math.abs(dy)) {
+            this.changeDirection(dx > 0 ? { x: 1, y: 0 } : { x: -1, y: 0 });
+        } else {
+            this.changeDirection(dy > 0 ? { x: 0, y: 1 } : { x: 0, y: -1 });
         }
     }
 }
