@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贪吃蛇 - Snake Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1 class="game-title">贪吃蛇</h1>
+            <div class="scores">
+                <div class="score-board">
+                    <span class="score-label">分数</span>
+                    <span id="score" class="score-value">0</span>
+                </div>
+                <div class="score-board">
+                    <span class="score-label">最高分</span>
+                    <span id="highScore" class="score-value">0</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas"></canvas>
+            <div id="gameOverlay" class="overlay">
+                <div class="overlay-content">
+                    <h2 id="overlayTitle">贪吃蛇</h2>
+                    <div class="difficulty-selector">
+                        <button id="diffEasy" class="diff-btn">简单</button>
+                        <button id="diffNormal" class="diff-btn active">普通</button>
+                        <button id="diffHard" class="diff-btn">困难</button>
+                    </div>
+                    <p id="overlayMessage"></p>
+                    <button id="overlayBtn" class="btn">开始游戏</button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="game-footer">
+            <p class="controls-hint">使用 ↑ ↓ ← → 方向键控制蛇的移动</p>
+        </footer>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
